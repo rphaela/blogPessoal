@@ -19,8 +19,8 @@ public class UsuarioService {
 	
 	public Optional<Usuario> cadastrarUsuario(Usuario usuario){
 		
-		if(usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent()) {
-			return Optional.empty(); }
+		if(usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
+			return Optional.empty();
 		
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
 		
@@ -28,6 +28,31 @@ public class UsuarioService {
 		
 		}
 	
+	public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin) {
+		
+		Optional<Usuario> usuario = usuarioRepository.findByUsuario(usuarioLogin.get().getUsuario());
+		
+		if(usuario.isPresent()) {
+			if(compararSenhas(usuarioLogin.get().getSenha(), usuario.get().getSenha())) {
+				usuarioLogin.get().setId(usuario.get().getId());
+				usuarioLogin.get().setNome(usuario.get().getNome());
+				usuarioLogin.get().setFoto(usuario.get().getFoto());
+				usuarioLogin.get().setToken(geradorBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
+				usuarioLogin.get().setSenha(usuario.get().getSenha());
+				
+				return usuarioLogin; }
+		}
+		
+		return Optional.empty();
+	}
+	
+		private String criptografarSenha (String senha) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		
+		return encoder.encode(senha);
+		
+		}
+		
 	private boolean compararSenhas(String senhaDigitada, String senhaDoDB) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
@@ -35,13 +60,7 @@ public class UsuarioService {
 		
 		}
 	
-	private String criptografarSenha (String senha) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		
-		return encoder.encode(senha);
-		
-		}
-	
+
 	private String geradorBasicToken(String usuario, String senha) {
 		
 		String token = usuario + ":" + senha;
@@ -52,23 +71,6 @@ public class UsuarioService {
 	}
 
 	
-	public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin) {
-		
-		Optional<Usuario> usuario = usuarioRepository.findByUsuario(usuarioLogin.get().getUsuario());
-		
-		if(usuario.isPresent()) {
-			if(compararSenhas(usuarioLogin.get().getSenha(), usuario.get().getSenha())) {
-			usuarioLogin.get().setId(usuario.get().getId());
-			usuarioLogin.get().setNome(usuario.get().getNome());
-			usuarioLogin.get().setFoto(usuario.get().getFoto());
-			usuarioLogin.get().setToken(geradorBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
-			usuarioLogin.get().setSenha(usuario.get().getSenha());
-			
-			return usuarioLogin; }
-		}
-		
-		return Optional.empty();
-	}
 	
 	
 }

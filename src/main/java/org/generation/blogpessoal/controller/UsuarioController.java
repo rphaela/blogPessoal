@@ -44,8 +44,7 @@ public class UsuarioController {
 				.orElse(ResponseEntity.notFound().build());
 		
 	}
-	
-	
+		
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Usuario> post (@Valid @RequestBody Usuario usuario){
 		return usuarioService.cadastrarUsuario(usuario)
