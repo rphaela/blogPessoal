@@ -16,6 +16,8 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Entity
 @Table(name = "tb_usuarios")
 public class Usuario {
@@ -24,16 +26,18 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
+	@NotBlank(message = "Este é um campo obrigatório!")
 	@Size(min = 3, max = 15)
 	private String nome;
 
-	@Email
+	@Schema(example = "email@email.com")
+	@NotNull(message = "Este é um campo obrigatório!")
+	@Email(message = "O e-mail inserido deve ser um e-mail válido!")
 	private String usuario;
 
 	@NotNull
 	@NotBlank
-	@Size(min = 8)
+	@Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
 	private String senha;
 
 	private String foto;
